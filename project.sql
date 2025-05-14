@@ -1,39 +1,34 @@
--- project status
+-- Step 1: Create a unified project status view from two separate tables
+WITH project_status AS (
+    SELECT 
+        project_id,
+        project_budget,
+        project_name,
+        'upcoming' AS status 
+    FROM [upcoming projects] 
 
-with project_status as(
-select 
-project_id,
-project_budget,
-project_name,
-'upcoming' as status 
-from [upcoming projects] 
- 
- union all
+    UNION ALL
 
-select
-project_id,
-project_budget,
-project_name, 
-'completed' as status
-from  completed_projects)
+    SELECT
+        project_id,
+        project_budget,
+        project_name, 
+        'completed' AS status
+    FROM completed_projects
+)
 
-
---big table
-
-select
- e.employee_id,
- e.first_name,
- e.last_name,
- e.salary,
- d.Department_Name,
- pa.project_id,
- ps.project_name,
- ps.project_budget,
- ps.status
-from employees e
-join departments d
-on e.department_id = d.Department_ID
-join project_assignments pa
-on  pa.employee_id = e.employee_id
-join project_status ps
-on ps.project_id=pa.project_id
+-- Step 2: Join employees with departments, project assignments, and project statuses
+SELECT
+    e.employee_id,
+    e.first_name,
+    e.last_name,
+    e.salary,
+    d.Department_Name,
+    pa.project_id,
+    ps.project_name,
+    ps.project_budget,
+    ps.status
+FROM employees e
+JOIN departments d ON e.department_id = d.Department_ID
+JOIN project_assignments pa ON pa.employee_id = e.employee_id
+JOIN project_status ps ON ps.project_id = pa.project_id;
